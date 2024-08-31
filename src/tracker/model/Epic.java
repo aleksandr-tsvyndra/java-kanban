@@ -1,35 +1,19 @@
+package tracker.model;
+
+import tracker.util.TaskStatus;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private String title;
-    private String description;
-    private int id;
-    private TaskStatus status;
     private ArrayList<Subtask> epicSubtasks;
 
     public Epic(String title, String description, int id, TaskStatus status) {
-        this.title = title;
-        this.description = description;
-        this.id = id;
-        this.status = status;
+        setTitle(title);
+        setDescription(description);
+        setId(id);
+        setStatus(status);
         this.epicSubtasks = new ArrayList<>();
     }
-
-    public String getTitle() { return title; }
-
-    public void setTitle(String newTitle) { title = newTitle; }
-
-    public String getDescription() { return description; }
-
-    public void setDescription(String newDescription) { description = newDescription; }
-
-    public int getId() { return id; }
-
-    public void setId(int newId) { id = newId; }
-
-    public TaskStatus getStatus() { return status; }
-
-    public void setStatus(TaskStatus newStatus) { status = newStatus; }
 
     public void calculateEpicStatus() {
         int newSubtasks = 0;
@@ -67,13 +51,9 @@ public class Epic extends Task {
         }
     }
 
-    public ArrayList<Subtask> getEpicSubtasks() {
-        return epicSubtasks;
-    }
+    public ArrayList<Subtask> getEpicSubtasks() { return epicSubtasks; }
 
-    public void setEpicSubtasks(ArrayList<Subtask> subtasks) {
-        this.epicSubtasks = subtasks;
-    }
+    public void setEpicSubtasks(ArrayList<Subtask> subtasks) { this.epicSubtasks = subtasks; }
 
     public void updateSubtaskInEpic(Subtask updatedSubtask) {
         for (Subtask sub : epicSubtasks) {
@@ -87,11 +67,11 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
+        return "tracker.model.Epic{" +
+                "title='" + getTitle() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status=" + getStatus() +
                 ", epicSubtasks=" + epicSubtasks +
                 '}';
     }

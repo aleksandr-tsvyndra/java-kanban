@@ -1,11 +1,16 @@
-public class Subtask extends Task {
+package tracker;
+
+import java.util.Objects;
+
+public class Task {
     private String title;
     private String description;
     private int id;
-    private int epicId;
     private TaskStatus status;
 
-    public Subtask(String title, String description, int id, TaskStatus status) {
+    public Task() {}
+
+    public Task(String title, String description, int id, TaskStatus status) {
         this.title = title;
         this.description = description;
         this.id = id;
@@ -28,18 +33,26 @@ public class Subtask extends Task {
 
     public void setStatus(TaskStatus newStatus) { status = newStatus; }
 
-    public int getEpicId() { return epicId; }
-
-    public void setEpicId(int epicId) { this.epicId = epicId; }
-
     @Override
     public String toString() {
-        return "Subtask{" +
+        return "tracker.Task{" +
                 "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
-                ", epicId=" + epicId +
                 ", status=" + status +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task that = (Task) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

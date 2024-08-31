@@ -1,12 +1,14 @@
+package tracker;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TaskManager {
-    public HashMap<Integer, Task> tasks;
-    public HashMap<Integer, Epic> epicTasks;
-    public HashMap<Integer, Subtask> subtasks;
+    private HashMap<Integer, Task> tasks;
+    private HashMap<Integer, Epic> epicTasks;
+    private HashMap<Integer, Subtask> subtasks;
 
-    static int id = 1;
+    private static int id = 1;
 
     public TaskManager() {
         tasks = new HashMap<>();
@@ -38,12 +40,8 @@ public class TaskManager {
         tasks.clear();
     }
 
-    public ArrayList<String> getAllTasks() {
-        ArrayList<String> taskList = new ArrayList<>();
-        for (Task task : tasks.values()) {
-            taskList.add(task.toString());
-        }
-        return taskList;
+    public ArrayList<Task> getAllTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
     public void addNewEpic(Epic newEpic) {
@@ -73,12 +71,8 @@ public class TaskManager {
         return epicTasks.get(epicId);
     }
 
-    public ArrayList<String> getAllEpics() {
-        ArrayList<String> epicList = new ArrayList<>();
-        for (Epic epic : epicTasks.values()) {
-            epicList.add(epic.toString());
-        }
-        return epicList;
+    public ArrayList<Epic> getAllEpics() {
+        return new ArrayList<>(epicTasks.values());
     }
 
     public ArrayList<String> getAllEpicSubtasks(int epicId) {
@@ -142,12 +136,8 @@ public class TaskManager {
         return subtasks.get(subtaskId);
     }
 
-    public ArrayList<String> getAllSubtasks() {
-        ArrayList<String> subtaskList = new ArrayList<>();
-        for (Subtask subtask : subtasks.values()) {
-            subtaskList.add(subtask.toString());
-        }
-        return subtaskList;
+    public ArrayList<Subtask> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
     }
 
     public void deleteSubtaskById(Integer id) {
@@ -168,7 +158,6 @@ public class TaskManager {
             epic.deleteAllEpicSubtasks();
             epic.calculateEpicStatus();
         }
-
     }
 
     private int generateNewId() { return id++; }
