@@ -1,164 +1,47 @@
-package tracker;
+package tracker.controllers;
+
+import tracker.model.Epic;
+import tracker.model.Subtask;
+import tracker.model.Task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class TaskManager {
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epicTasks;
-    private HashMap<Integer, Subtask> subtasks;
+public interface TaskManager {
+    void addNewTask(Task newTask);
 
-    private static int id = 1;
+    void updateTask(Task updatedTask);
 
-    public TaskManager() {
-        tasks = new HashMap<>();
-        epicTasks = new HashMap<>();
-        subtasks = new HashMap<>();
-    }
+    Task getTaskById(Integer id);
 
-    public void addNewTask(Task newTask) {
-        int newId = generateNewId();
-        newTask.setId(newId);
-        tasks.put(newTask.getId(), newTask);
-    }
+    void deleteTaskById(Integer id);
 
-    public void updateTask(Task updatedTask) {
-        if (!tasks.containsKey(updatedTask.getId())) {
-            System.out.println("Ошибка: задачи с таким id не существует!");
-            return;
-        }
-        tasks.put(updatedTask.getId(), updatedTask);
-    }
+    void deleteAllTasks();
 
-    public Task getTaskById(Integer id) { return tasks.get(id); }
+    ArrayList<Task> getAllTasks();
 
-    public void deleteTaskById(Integer id) {
-        tasks.remove(id);
-    }
+    void addNewEpic(Epic newEpic);
 
-    public void deleteAllTasks() {
-        tasks.clear();
-    }
+    void updateEpic(Epic updatedEpic);
 
-    public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
-    }
+    Epic getEpicById(Integer epicId);
 
-    public void addNewEpic(Epic newEpic) {
-        int newId = generateNewId();
-        newEpic.setId(newId);
-        epicTasks.put(newEpic.getId(), newEpic);
-    }
+    ArrayList<Epic> getAllEpics();
 
-    public void updateEpic(Epic updatedEpic) {
-        int epicId = updatedEpic.getId();
-        if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
-            return;
-        }
-        Epic epic = epicTasks.get(epicId);
-        ArrayList<Subtask> subtasks = epic.getEpicSubtasks();
-        updatedEpic.setEpicSubtasks(subtasks);
-        updatedEpic.calculateEpicStatus();
-        epicTasks.put(epicId, updatedEpic);
-    }
+    ArrayList<Subtask> getAllEpicSubtasks(int epicId);
 
-    public Epic getEpicById(Integer epicId) {
-        if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
-            return null;
-        }
-        return epicTasks.get(epicId);
-    }
+    void deleteEpicById(Integer epicId);
 
-    public ArrayList<Epic> getAllEpics() {
-        return new ArrayList<>(epicTasks.values());
-    }
+    void deleteAllEpics();
 
-    public ArrayList<String> getAllEpicSubtasks(int epicId) {
-        Epic epic = epicTasks.get(epicId);
-        ArrayList<String> subtaskList = new ArrayList<>();
-        for (Subtask sub : epic.getEpicSubtasks()) {
-            subtaskList.add(sub.toString());
-        }
-        return subtaskList;
-    }
+    void addNewSubtask(Subtask newSubtask, int epicId);
 
-    public void deleteEpicById(Integer epicId) {
-        if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
-            return;
-        }
-        Epic epic = epicTasks.get(epicId);
-        ArrayList<Subtask> deletedSubs = epic.getEpicSubtasks();
-        for (Subtask sub : deletedSubs) {
-            subtasks.remove(sub.getId());
-        }
-        epicTasks.remove(epicId);
-    }
+    void updateSubtask(Subtask updatedSubtask);
 
-    public void deleteAllEpics() {
-        epicTasks.clear();
-        subtasks.clear();
-    }
+    Subtask getSubtaskById(Integer subtaskId);
 
-    public void addNewSubtask(Subtask newSubtask, int epicId) {
-        if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
-            return;
-        }
-        int newId = generateNewId();
-        newSubtask.setId(newId);
-        subtasks.put(newSubtask.getId(), newSubtask);
-        Epic epic = epicTasks.get(epicId);
-        ArrayList<Subtask> epicSubtasks = epic.getEpicSubtasks();
-        newSubtask.setEpicId(epicId);
-        epicSubtasks.add(newSubtask);
-        epic.calculateEpicStatus();
-    }
+    ArrayList<Subtask> getAllSubtasks();
 
-    public void updateSubtask(Subtask updatedSubtask) {
-        int subtaskId = updatedSubtask.getId();
-        Subtask sub = subtasks.get(subtaskId);
-        updatedSubtask.setEpicId(sub.getEpicId());
-        subtasks.put(subtaskId, updatedSubtask);
-        int epicId = updatedSubtask.getEpicId();
-        Epic epic = epicTasks.get(epicId);
-        epic.updateSubtaskInEpic(updatedSubtask);
-        epic.calculateEpicStatus();
-    }
+    void deleteSubtaskById(Integer id);
 
-    public Subtask getSubtaskById(Integer subtaskId) {
-        if (!subtasks.containsKey(subtaskId)) {
-            System.out.println("Ошибка: подзадачи с таким id не существует!");
-            return null;
-        }
-        return subtasks.get(subtaskId);
-    }
-
-    public ArrayList<Subtask> getAllSubtasks() {
-        return new ArrayList<>(subtasks.values());
-    }
-
-    public void deleteSubtaskById(Integer id) {
-        if (!subtasks.containsKey(id)) {
-            System.out.println("Ошибка: подзадачи с таким id не существует!");
-            return;
-        }
-        Subtask subtask = subtasks.get(id);
-        Epic epic = epicTasks.get(subtask.getEpicId());
-        epic.deleteSubtaskInEpic(subtask.getId());
-        epic.calculateEpicStatus();
-        subtasks.remove(subtask.getId());
-    }
-
-    public void deleteAllSubtasks() {
-        subtasks.clear();
-        for (Epic epic : epicTasks.values()) {
-            epic.deleteAllEpicSubtasks();
-            epic.calculateEpicStatus();
-        }
-    }
-
-    private int generateNewId() { return id++; }
+    void deleteAllSubtasks();
 }
