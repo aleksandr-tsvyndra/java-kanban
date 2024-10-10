@@ -14,16 +14,16 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Task> tasks;
     private Map<Integer, Epic> epicTasks;
     private Map<Integer, Subtask> subtasks;
-    private List<Task> history;
+
+    private HistoryManager historyManager;
 
     private static int id = 1;
-    private static final int HISTORY_LIMIT = 10;
 
-    public InMemoryTaskManager() {
+    public InMemoryTaskManager(HistoryManager historyManager) {
         tasks = new HashMap<>();
         epicTasks = new HashMap<>();
         subtasks = new HashMap<>();
-        history = new ArrayList<>();
+        this.historyManager = historyManager;
     }
 
     @Override
@@ -48,10 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Ошибка: задачи с таким id не существует!");
             return null;
         }
-        if (history.size() == HISTORY_LIMIT) {
-            history.remove(0);
-        }
-        history.add(tasks.get(id));
+        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
@@ -91,10 +88,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Ошибка: эпика с таким id не существует!");
             return null;
         }
-        if (history.size() == HISTORY_LIMIT) {
-            history.remove(0);
-        }
-        history.add(epicTasks.get(epicId));
+        historyManager.add(epicTasks.get(id));
         return epicTasks.get(epicId);
     }
 
@@ -161,10 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Ошибка: подзадачи с таким id не существует!");
             return null;
         }
-        if (history.size() == HISTORY_LIMIT) {
-            history.remove(0);
-        }
-        history.add(subtasks.get(subtaskId));
+        historyManager.add(subtasks.get(id));
         return subtasks.get(subtaskId);
     }
 
@@ -194,7 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistory() { return history; }
+    public List<Task> getHistory() { return historyManager.getHistory(); }
 
     private int generateNewId() { return id++; }
 }
