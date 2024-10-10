@@ -5,19 +5,25 @@ import tracker.model.Subtask;
 import tracker.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import java.util.HashMap;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epicTasks;
-    private HashMap<Integer, Subtask> subtasks;
+    private Map<Integer, Task> tasks;
+    private Map<Integer, Epic> epicTasks;
+    private Map<Integer, Subtask> subtasks;
+    private List<Task> history;
 
     private static int id = 1;
+    private static final int HISTORY_LIMIT = 10;
 
     public InMemoryTaskManager() {
         tasks = new HashMap<>();
         epicTasks = new HashMap<>();
         subtasks = new HashMap<>();
+        history = new ArrayList<>();
     }
 
     @Override
@@ -37,22 +43,26 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTaskById(Integer id) { return tasks.get(id); }
-
-    @Override
-    public void deleteTaskById(Integer id) {
-        tasks.remove(id);
+    public Task getTaskById(Integer id) {
+        if (!tasks.containsKey(id)) {
+            System.out.println("Ошибка: задачи с таким id не существует!");
+            return null;
+        }
+        if (history.size() == HISTORY_LIMIT) {
+            history.remove(0);
+        }
+        history.add(tasks.get(id));
+        return tasks.get(id);
     }
 
     @Override
-    public void deleteAllTasks() {
-        tasks.clear();
-    }
+    public void deleteTaskById(Integer id) { tasks.remove(id); }
 
     @Override
-    public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
-    }
+    public void deleteAllTasks() { tasks.clear(); }
+
+    @Override
+    public List<Task> getAllTasks() { return new ArrayList<>(tasks.values()); }
 
     @Override
     public void addNewEpic(Epic newEpic) {
@@ -81,16 +91,18 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Ошибка: эпика с таким id не существует!");
             return null;
         }
+        if (history.size() == HISTORY_LIMIT) {
+            history.remove(0);
+        }
+        history.add(epicTasks.get(epicId));
         return epicTasks.get(epicId);
     }
 
     @Override
-    public ArrayList<Epic> getAllEpics() {
-        return new ArrayList<>(epicTasks.values());
-    }
+    public List<Epic> getAllEpics() { return new ArrayList<>(epicTasks.values()); }
 
     @Override
-    public ArrayList<Subtask> getAllEpicSubtasks(int epicId) {
+    public List<Subtask> getAllEpicSubtasks(int epicId) {
         Epic epic = epicTasks.get(epicId);
         return epic.getEpicSubtasks();
     }
@@ -149,13 +161,15 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Ошибка: подзадачи с таким id не существует!");
             return null;
         }
+        if (history.size() == HISTORY_LIMIT) {
+            history.remove(0);
+        }
+        history.add(subtasks.get(subtaskId));
         return subtasks.get(subtaskId);
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubtasks() {
-        return new ArrayList<>(subtasks.values());
-    }
+    public List<Subtask> getAllSubtasks() { return new ArrayList<>(subtasks.values()); }
 
     @Override
     public void deleteSubtaskById(Integer id) {
@@ -178,6 +192,9 @@ public class InMemoryTaskManager implements TaskManager {
             epic.calculateEpicStatus();
         }
     }
+
+    @Override
+    public List<Task> getHistory() { return history; }
 
     private int generateNewId() { return id++; }
 }
