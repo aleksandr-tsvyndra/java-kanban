@@ -1,10 +1,21 @@
+package tracker;
+
+import tracker.controllers.TaskManager;
+
+import tracker.model.Epic;
+import tracker.model.Subtask;
+import tracker.model.Task;
+
+import tracker.util.TaskStatus;
+import tracker.util.Managers;
+
 public class Main {
 
     public static void main(String[] args) {
 
         System.out.println("Поехали!");
 
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         Task taskOne = new Task("Переезд", "Задача 1", 0, TaskStatus.NEW);
         Task taskTwo = new Task("Помыть посуду", "Задача 2", 0, TaskStatus.NEW);
