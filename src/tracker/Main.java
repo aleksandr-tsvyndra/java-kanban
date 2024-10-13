@@ -92,10 +92,12 @@ public class Main {
         taskManager.addNewSubtask(sub2, epicWithThreeSubs.getId());
         taskManager.addNewSubtask(sub3, epicWithThreeSubs.getId());
 
-        System.out.println("Получаем Эпик 1 по id: " + taskManager.getEpicById(epicWithThreeSubs.getId()));
+        System.out.println("Получаем Новый эпик по id: " + taskManager.getEpicById(epicWithThreeSubs.getId()));
 
         taskManager.deleteAllSubtasks();
         System.out.println("Список подзадач очистился: " + taskManager.getAllSubtasks());
         System.out.println("Эпик также очистился от подзадач, но сам не удалился: " + taskManager.getAllEpics());
+
+        System.out.println("История просмотренных задач (5 сохраненных задач): " + taskManager.getHistory());
     }
 }

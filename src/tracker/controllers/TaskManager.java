@@ -7,9 +7,9 @@ import tracker.model.Task;
 import java.util.List;
 
 public interface TaskManager {
-    void addNewTask(Task newTask);
+    int addNewTask(Task newTask);
 
-    void updateTask(Task updatedTask);
+    Task updateTask(Task updatedTask);
 
     Task getTaskById(Integer id);
 
@@ -19,9 +19,9 @@ public interface TaskManager {
 
     List<Task> getAllTasks();
 
-    void addNewEpic(Epic newEpic);
+    int addNewEpic(Epic newEpic);
 
-    void updateEpic(Epic updatedEpic);
+    Epic updateEpic(Epic updatedEpic);
 
     Epic getEpicById(Integer epicId);
 
@@ -33,9 +33,9 @@ public interface TaskManager {
 
     void deleteAllEpics();
 
-    void addNewSubtask(Subtask newSubtask, int epicId);
+    Integer addNewSubtask(Subtask newSubtask, int epicId);
 
-    void updateSubtask(Subtask updatedSubtask);
+    Subtask updateSubtask(Subtask updatedSubtask);
 
     Subtask getSubtaskById(Integer subtaskId);
 

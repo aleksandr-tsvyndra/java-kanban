@@ -3,16 +3,14 @@ package tracker.model;
 import tracker.util.TaskStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    private ArrayList<Subtask> epicSubtasks;
+    private List<Subtask> epicSubtasks;
 
     public Epic(String title, String description, int id, TaskStatus status) {
-        setTitle(title);
-        setDescription(description);
-        setId(id);
-        setStatus(status);
-        this.epicSubtasks = new ArrayList<>();
+        super(title, description, id, status);
+        epicSubtasks = new ArrayList<>();
     }
 
     public void calculateEpicStatus() {
@@ -51,9 +49,9 @@ public class Epic extends Task {
         }
     }
 
-    public ArrayList<Subtask> getEpicSubtasks() { return epicSubtasks; }
+    public List<Subtask> getEpicSubtasks() { return epicSubtasks; }
 
-    public void setEpicSubtasks(ArrayList<Subtask> subtasks) { this.epicSubtasks = subtasks; }
+    public void setEpicSubtasks(List<Subtask> subtasks) { this.epicSubtasks = subtasks; }
 
     public void updateSubtaskInEpic(Subtask updatedSubtask) {
         for (Subtask sub : epicSubtasks) {

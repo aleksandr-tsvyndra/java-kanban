@@ -1,4 +1,6 @@
-package tracker;
+package tracker.model;
+
+import tracker.util.TaskStatus;
 
 import java.util.Objects;
 
@@ -7,8 +9,6 @@ public class Task {
     private String description;
     private int id;
     private TaskStatus status;
-
-    public Task() {}
 
     public Task(String title, String description, int id, TaskStatus status) {
         this.title = title;
@@ -35,7 +35,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "tracker.Task{" +
+        return "tracker.model.Task{" +
                 "title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
