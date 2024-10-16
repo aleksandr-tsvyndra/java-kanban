@@ -37,7 +37,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(Task updatedTask) {
         if (!tasks.containsKey(updatedTask.getId())) {
-            System.out.println("Ошибка: задачи с таким id не существует!");
             return null;
         }
         tasks.put(updatedTask.getId(), updatedTask);
@@ -47,7 +46,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(Integer id) {
         if (!tasks.containsKey(id)) {
-            System.out.println("Ошибка: задачи с таким id не существует!");
             return null;
         }
         historyManager.add(tasks.get(id));
@@ -75,7 +73,6 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic updateEpic(Epic updatedEpic) {
         int epicId = updatedEpic.getId();
         if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
             return null;
         }
         Epic epic = epicTasks.get(epicId);
@@ -89,7 +86,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(Integer epicId) {
         if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
             return null;
         }
         historyManager.add(epicTasks.get(epicId));
@@ -108,7 +104,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpicById(Integer epicId) {
         if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
             return;
         }
         Epic epic = epicTasks.get(epicId);
@@ -128,7 +123,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Integer addNewSubtask(Subtask newSubtask, int epicId) {
         if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Ошибка: эпика с таким id не существует!");
             return null;
         }
         int newId = generateNewId();
@@ -144,6 +138,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask updateSubtask(Subtask updatedSubtask) {
+        if (!subtasks.containsKey(updatedSubtask.getId())) {
+            return null;
+        }
         int subtaskId = updatedSubtask.getId();
         Subtask sub = subtasks.get(subtaskId);
         updatedSubtask.setEpicId(sub.getEpicId());
@@ -159,7 +156,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(Integer subtaskId) {
         if (!subtasks.containsKey(subtaskId)) {
-            System.out.println("Ошибка: подзадачи с таким id не существует!");
             return null;
         }
         historyManager.add(subtasks.get(subtaskId));
@@ -172,7 +168,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubtaskById(Integer id) {
         if (!subtasks.containsKey(id)) {
-            System.out.println("Ошибка: подзадачи с таким id не существует!");
             return;
         }
         Subtask subtask = subtasks.get(id);

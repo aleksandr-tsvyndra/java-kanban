@@ -22,14 +22,14 @@ public class Main {
         taskManager.addNewTask(taskOne);
         taskManager.addNewTask(taskTwo);
 
-        Epic epicOne = new Epic("Эпик 1", "Эпик с 2-мя подзадачами", 0, TaskStatus.NEW);
+        Epic epicOne = new Epic("Эпик 1", "Эпик с 2-мя подзадачами", 0);
         Subtask subOne = new Subtask("Подзадача 1", "Подзадача 1-го эпика", 0, TaskStatus.NEW);
         Subtask subTwo = new Subtask("Подзадача 2", "Подзадача 1-го эпика", 0, TaskStatus.NEW);
         taskManager.addNewEpic(epicOne);
         taskManager.addNewSubtask(subOne, epicOne.getId());
         taskManager.addNewSubtask(subTwo, epicOne.getId());
 
-        Epic epicTwo = new Epic("Эпик 2", "Эпик с 1-ой подзадачей", 0, TaskStatus.NEW);
+        Epic epicTwo = new Epic("Эпик 2", "Эпик с 1-ой подзадачей", 0);
         Subtask subThree = new Subtask("Подзадача 3", "Подзадача 2-го эпика", 0, TaskStatus.NEW);
         taskManager.addNewEpic(epicTwo);
         taskManager.addNewSubtask(subThree, epicTwo.getId());
@@ -39,20 +39,23 @@ public class Main {
         System.out.println("Список подзадач: " + taskManager.getAllSubtasks());
 
         Task updatedTaskOne = new Task("Вынести мусор", "Задача 1", 1, TaskStatus.IN_PROGRESS);
-        taskManager.updateTask(updatedTaskOne);
+        Object result = taskManager.updateTask(updatedTaskOne);
+        checkForNull(result);
         System.out.println("Обновленная задача 1: " + taskManager.getTaskById(taskOne.getId()));
 
         System.out.println("Список подзадач эпика 1: " + taskManager.getAllEpicSubtasks(epicOne.getId()));
 
         Subtask updatedSubOne = new Subtask("Обновленная подзадача 1", "Подзадача 1-го эпика", 4,
                 TaskStatus.DONE);
-        taskManager.updateSubtask(updatedSubOne);
+        result = taskManager.updateSubtask(updatedSubOne);
+        checkForNull(result);
         System.out.println("Обновленная подзадача 1: " + taskManager.getSubtaskById(subOne.getId()));
         System.out.println("Статус Эпика 1 поменялся с NEW на IN_PROGRESS: " + epicOne.getStatus());
 
         Subtask updatedSubTwo = new Subtask("Обновленная подзадача 2", "Подзадача 1-го эпика", 5,
                 TaskStatus.DONE);
-        taskManager.updateSubtask(updatedSubTwo);
+        result = taskManager.updateSubtask(updatedSubTwo);
+        checkForNull(result);
         System.out.println("Обновленная подзадача 2: " + taskManager.getSubtaskById(subTwo.getId()));
         System.out.println("Статус Эпика 1 поменялся с IN_PROGRESS на DONE: " + epicOne.getStatus());
 
@@ -60,13 +63,14 @@ public class Main {
 
         Subtask updatedSubThree = new Subtask("Обновленная подзадача 3", "Подзадача 2-го эпика", 7,
                 TaskStatus.DONE);
-        taskManager.updateSubtask(updatedSubThree);
+        result = taskManager.updateSubtask(updatedSubThree);
+        checkForNull(result);
         System.out.println("Обновленная подзадача 3: " + taskManager.getSubtaskById(subThree.getId()));
         System.out.println("Статус Эпика 2 поменялся с NEW на DONE: " + epicTwo.getStatus());
 
-        Epic updatedEpicOne = new Epic("Обновленный эпик 1", "Эпик с 2-мя подзадачами", 3,
-                TaskStatus.NEW);
-        taskManager.updateEpic(updatedEpicOne);
+        Epic updatedEpicOne = new Epic("Обновленный эпик 1", "Эпик с 2-мя подзадачами", 3);
+        result = taskManager.updateEpic(updatedEpicOne);
+        checkForNull(result);
         System.out.println("Обновленный эпик 1: " + taskManager.getEpicById(updatedEpicOne.getId()));
 
         taskManager.deleteTaskById(taskTwo.getId());
@@ -83,7 +87,7 @@ public class Main {
         System.out.println("Список эпиков очистился: " + taskManager.getAllEpics());
         System.out.println("Список подзадач очистился вместе с эпиками: " + taskManager.getAllSubtasks());
 
-        Epic epicWithThreeSubs = new Epic("Новый эпик", "Эпик с 3-мя подзадачами", 0, TaskStatus.NEW);
+        Epic epicWithThreeSubs = new Epic("Новый эпик", "Эпик с 3-мя подзадачами", 0);
         Subtask sub1 = new Subtask("Подзадача 1", "Описание", 0, TaskStatus.DONE);
         Subtask sub2 = new Subtask("Подзадача 2", "Описание", 0, TaskStatus.NEW);
         Subtask sub3 = new Subtask("Подзадача 3", "Описание", 0, TaskStatus.NEW);
@@ -99,5 +103,11 @@ public class Main {
         System.out.println("Эпик также очистился от подзадач, но сам не удалился: " + taskManager.getAllEpics());
 
         System.out.println("История просмотренных задач (5 сохраненных задач): " + taskManager.getHistory());
+    }
+
+    static void checkForNull(Object result) {
+        if (result == null) {
+            System.out.println("Ошибка: элемента с таким id не существует");
+        }
     }
 }
