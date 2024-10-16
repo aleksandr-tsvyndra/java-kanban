@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import tracker.model.Task;
@@ -22,6 +23,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
+    @DisplayName("Сохранение задачи в историю")
     void shouldAddTask() {
         historyManager.add(task);
 
@@ -32,6 +34,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
+    @DisplayName("Список для хранения просмотров не должен превышать десяти элементов")
     void shouldNotAddMoreThantTenTasks() {
         for (int i = 1; i < 12; i++) {
             historyManager.add(task);

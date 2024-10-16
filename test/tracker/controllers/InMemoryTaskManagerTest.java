@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import tracker.model.Subtask;
@@ -23,6 +24,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Сохранение задачи")
     void shouldSaveTask() {
         Task task = new Task("Задача 1", "Описание 1", 1, TaskStatus.NEW);
         final int taskId = taskManager.addNewTask(task);
@@ -40,6 +42,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Обновление задачи по Id")
     void shouldUpdateTaskWithSpecifiedId() {
         Task task = new Task("Задача 1", "Описание 1", 1, TaskStatus.NEW);
         final int taskId = taskManager.addNewTask(task);
@@ -58,6 +61,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Вызов или удаление задачи по Id")
     void shouldReturnOrDeleteTaskWithSpecifiedId() {
         Task task = new Task("Задача 1", "Описание 1", 1, TaskStatus.NEW);
         final int taskId = taskManager.addNewTask(task);
@@ -75,6 +79,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Очищение списка задач")
     void shouldDeleteAllTasks() {
         Task taskOne = new Task("Задача 1", "Описание 1", 1, TaskStatus.NEW);
         Task taskTwo = new Task("Задача 2", "Описание 2", 2, TaskStatus.NEW);
@@ -88,8 +93,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Сохранение эпика")
     void shouldSaveEpic() {
-        Epic epic = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         final int epicId = taskManager.addNewEpic(epic);
 
         final Epic actualEpic = taskManager.getEpicById(epicId);
@@ -105,13 +111,14 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Обновление эпика по Id")
     void shouldUpdateEpicWithSpecifiedId() {
-        Epic epic = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         final int epicId = taskManager.addNewEpic(epic);
-        Epic updatedEpic = new Epic("Эпик 1_updated", "Описание 1_updated", epicId, TaskStatus.NEW);
+        Epic updatedEpic = new Epic("Эпик 1_updated", "Описание 1_updated", epicId);
 
         final Epic expectedUpdatedEpic = new Epic("Эпик 1_updated", "Описание 1_updated",
-                epicId, TaskStatus.NEW);
+                epicId);
 
         final Epic actualUpdatedEpic = taskManager.updateEpic(updatedEpic);
 
@@ -123,8 +130,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Вызов или удаление эпика по Id")
     void shouldReturnOrDeleteEpicWithSpecifiedId() {
-        Epic epic = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         final int epicId = taskManager.addNewEpic(epic);
 
         final Epic actualEpic = taskManager.getEpicById(epicId);
@@ -140,9 +148,10 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Очищение спика эпиков")
     void shouldDeleteAllEpics() {
-        Epic epicOne = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
-        Epic epicTwo = new Epic("Эпик 2", "Описание 2", 2, TaskStatus.NEW);
+        Epic epicOne = new Epic("Эпик 1", "Описание 1", 1);
+        Epic epicTwo = new Epic("Эпик 2", "Описание 2", 2);
         taskManager.addNewEpic(epicOne);
         final int epicTwoId = taskManager.addNewEpic(epicTwo);
         Subtask subtask = new Subtask("Подзадача 1", "Описание 1", 3, TaskStatus.NEW);
@@ -157,8 +166,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Сохранение подзадачи")
     void shouldSaveSubtask() {
-        Epic epic = new Epic("Эпик с подзадачей 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик с подзадачей 1", "Описание 1", 1);
         Subtask subtask = new Subtask("Подзадача 1", "Описание 1", 2, TaskStatus.NEW);
         final int epicId = taskManager.addNewEpic(epic);
         final int subtaskId = taskManager.addNewSubtask(subtask, epicId);
@@ -177,8 +187,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Обновление подзадачи по Id")
     void shouldUpdateSubtaskWithSpecifiedId() {
-        Epic epic = new Epic("Эпик с подзадачей 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик с подзадачей 1", "Описание 1", 1);
         Subtask subtask = new Subtask("Подзадача 1", "Описание 1", 2, TaskStatus.NEW);
         final int epicId = taskManager.addNewEpic(epic);
         final int subtaskId = taskManager.addNewSubtask(subtask, epicId);
@@ -204,8 +215,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Вызов или удаление подзадачи по Id")
     void shouldReturnOrDeleteSubtaskWithSpecifiedId() {
-        Epic epic = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         Subtask subtask = new Subtask("Подзадача 1", "Описание 1", 2, TaskStatus.NEW);
         final int epicId = taskManager.addNewEpic(epic);
         final int subtaskId = taskManager.addNewSubtask(subtask, epicId);
@@ -223,8 +235,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Очищение спика подзадач")
     void shouldDeleteAllSubtasks() {
-        Epic epic = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         final int epicId = taskManager.addNewEpic(epic);
         Subtask subtaskOne = new Subtask("Подзадача 1", "Описание 1", 2, TaskStatus.NEW);
         Subtask subtaskTwo = new Subtask("Подзадача 2", "Описание 2", 3, TaskStatus.NEW);
@@ -240,8 +253,9 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("Рассчёт статуса эпика по статусу его подзадач")
     void shouldCalculateEpicStatusDependsOnItsSubtasksStatus() {
-        Epic epic = new Epic("Эпик 1", "Описание 1", 1, TaskStatus.NEW);
+        Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         final int epicId = taskManager.addNewEpic(epic);
 
         Subtask subtaskOne = new Subtask("Подзадача 1", "Описание 1", 2, TaskStatus.NEW);
