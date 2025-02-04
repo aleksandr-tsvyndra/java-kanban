@@ -3,21 +3,23 @@ package tracker.model;
 import tracker.util.TaskStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Epic extends Task {
-    private List<Subtask> epicSubtasks;
+    private final Map<Integer, Subtask> epicSubtasks;
 
     public Epic(String title, String description, int id) {
         super(title, description, id, TaskStatus.NEW);
-        epicSubtasks = new ArrayList<>();
+        epicSubtasks = new HashMap<>();
     }
 
     public void calculateEpicStatus() {
         int newSubtasks = 0;
         int doneSubtasks = 0;
 
-        for (Subtask sub : epicSubtasks) {
+        for (Subtask sub : epicSubtasks.values()) {
             if (sub.getStatus() == TaskStatus.NEW) {
                 newSubtasks += 1;
             } else {
@@ -34,14 +36,9 @@ public class Epic extends Task {
         }
     }
 
-    public void deleteSubtaskInEpic(int deletedSubId) {
-        for (Subtask sub : epicSubtasks) {
-            if (sub.getId() == deletedSubId) {
-                epicSubtasks.remove(sub);
-                break;
-            }
-        }
-    }
+    public void addSubtaskInEpic(Subtask subtask) { epicSubtasks.put(subtask.getId(), subtask); }
+
+    public void deleteSubtaskInEpic(int subId) { epicSubtasks.remove(subId); }
 
     public void deleteAllEpicSubtasks() {
         if (!epicSubtasks.isEmpty()) {
@@ -49,18 +46,17 @@ public class Epic extends Task {
         }
     }
 
-    public List<Subtask> getEpicSubtasks() { return epicSubtasks; }
+    public List<Subtask> getEpicSubtasks() { return new ArrayList<>(epicSubtasks.values()); }
 
-    public void setEpicSubtasks(List<Subtask> subtasks) { this.epicSubtasks = subtasks; }
+    public void setEpicSubtasks(List<Subtask> subtasks) {
+        for (Subtask sub : subtasks) {
+            epicSubtasks.put(sub.getId(), sub);
+        }
+    }
 
     public void updateSubtaskInEpic(Subtask updatedSubtask) {
-        for (Subtask sub : epicSubtasks) {
-            if (sub.equals(updatedSubtask)) {
-                epicSubtasks.remove(sub);
-                break;
-            }
-        }
-        epicSubtasks.add(updatedSubtask);
+        Integer subId = updatedSubtask.getId();
+        epicSubtasks.put(subId, updatedSubtask);
     }
 
     @Override
@@ -70,7 +66,7 @@ public class Epic extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
                 ", status=" + getStatus() +
-                ", epicSubtasks=" + epicSubtasks +
+                ", epicSubtasks=" + getEpicSubtasks() +
                 '}';
     }
 }

@@ -19,7 +19,7 @@ public class Subtask extends Task {
                 "title='" + getTitle() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
-                ", epicId=" + epicId +
+                ", epicId=" + getEpicId() +
                 ", status=" + getStatus() +
                 '}';
     }
