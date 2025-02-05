@@ -235,7 +235,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Очищение спика подзадач")
+    @DisplayName("Очищение списка подзадач")
     void shouldDeleteAllSubtasks() {
         Epic epic = new Epic("Эпик 1", "Описание 1", 1);
         final int epicId = taskManager.addNewEpic(epic);
