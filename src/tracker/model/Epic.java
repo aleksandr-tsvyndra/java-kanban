@@ -36,9 +36,13 @@ public class Epic extends Task {
         }
     }
 
-    public void addSubtaskInEpic(Subtask subtask) { epicSubtasks.put(subtask.getId(), subtask); }
+    public void addSubtaskInEpic(Subtask subtask) {
+        epicSubtasks.put(subtask.getId(), subtask);
+    }
 
-    public void deleteSubtaskInEpic(int subId) { epicSubtasks.remove(subId); }
+    public void deleteSubtaskInEpic(int subId) {
+        epicSubtasks.remove(subId);
+    }
 
     public void deleteAllEpicSubtasks() {
         if (!epicSubtasks.isEmpty()) {
@@ -46,7 +50,9 @@ public class Epic extends Task {
         }
     }
 
-    public List<Subtask> getEpicSubtasks() { return new ArrayList<>(epicSubtasks.values()); }
+    public List<Subtask> getEpicSubtasks() {
+        return new ArrayList<>(epicSubtasks.values());
+    }
 
     public void setEpicSubtasks(List<Subtask> subtasks) {
         for (Subtask sub : subtasks) {

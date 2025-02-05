@@ -17,21 +17,37 @@ public class Task {
         this.status = status;
     }
 
-    public String getTitle() { return title; }
+    public String getTitle() {
+        return title;
+    }
 
-    public void setTitle(String newTitle) { title = newTitle; }
+    public void setTitle(String newTitle) {
+        title = newTitle;
+    }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
-    public void setDescription(String newDescription) { description = newDescription; }
+    public void setDescription(String newDescription) {
+        description = newDescription;
+    }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
-    public void setId(int newId) { id = newId; }
+    public void setId(int newId) {
+        id = newId;
+    }
 
-    public TaskStatus getStatus() { return status; }
+    public TaskStatus getStatus() {
+        return status;
+    }
 
-    public void setStatus(TaskStatus newStatus) { status = newStatus; }
+    public void setStatus(TaskStatus newStatus) {
+        status = newStatus;
+    }
 
     @Override
     public String toString() {
