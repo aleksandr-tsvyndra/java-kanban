@@ -86,10 +86,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         if (idToNode.isEmpty()) {
-            System.out.println("В истории просмотров ничего нет.");
             return Collections.emptyList();
         }
-        return new ArrayList<>(getTasks());
+        return getTasks();
     }
 
     @Override

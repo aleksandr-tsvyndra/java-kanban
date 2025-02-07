@@ -38,7 +38,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task updateTask(Task updatedTask) {
         if (!tasks.containsKey(updatedTask.getId())) {
-            System.out.println("Обновление невозможно. Задача с данным id не существует.");
             return null;
         }
         tasks.put(updatedTask.getId(), updatedTask);
@@ -48,7 +47,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(Integer id) {
         if (!tasks.containsKey(id)) {
-            System.out.println("Задача с данным id не существует.");
             return null;
         }
         historyManager.add(tasks.get(id));
@@ -58,7 +56,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(Integer id) {
         if (!tasks.containsKey(id)) {
-            System.out.println("Удаление невозможно. Список задач пуст.");
             return;
         }
         historyManager.remove(id);
@@ -68,7 +65,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllTasks() {
         if (tasks.isEmpty()) {
-            System.out.println("Удаление невозможно. Список задач пуст.");
             return;
         }
         for (Integer taskId : tasks.keySet()) {
@@ -80,11 +76,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getAllTasks() {
         if (tasks.isEmpty()) {
-            System.out.println("Список задач пуст.");
             return Collections.emptyList();
-        }
-        for (Task task : tasks.values()) {
-            historyManager.add(task);
         }
         return new ArrayList<>(tasks.values());
     }
@@ -123,11 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Epic> getAllEpics() {
         if (epicTasks.isEmpty()) {
-            System.out.println("Список эпиков пуст.");
             return Collections.emptyList();
-        }
-        for (Task epic : epicTasks.values()) {
-            historyManager.add(epic);
         }
         return new ArrayList<>(epicTasks.values());
     }
@@ -137,11 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
         final Epic epic = epicTasks.get(epicId);
         final List<Subtask> subs = epic.getEpicSubtasks();
         if (subs.isEmpty()) {
-            System.out.println("Список подзадач эпика с данным id пуст.");
             return Collections.emptyList();
-        }
-        for (Task subtask : subs) {
-            historyManager.add(subtask);
         }
         return new ArrayList<>(subs);
     }
@@ -149,7 +133,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpicById(Integer epicId) {
         if (!epicTasks.containsKey(epicId)) {
-            System.out.println("Удаление невозможно. Список эпиков пуст.");
             return;
         }
         Epic epic = epicTasks.get(epicId);
@@ -166,7 +149,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         if (epicTasks.isEmpty()) {
-            System.out.println("Удаление невозможно. Список эпиков пуст.");
             return;
         }
         for (Integer taskId : subtasks.keySet()) {
@@ -214,7 +196,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(Integer subtaskId) {
         if (!subtasks.containsKey(subtaskId)) {
-            System.out.println("Подзадачи с данным id не существует.");
             return null;
         }
         historyManager.add(subtasks.get(subtaskId));
@@ -224,11 +205,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getAllSubtasks() {
         if (subtasks.isEmpty()) {
-            System.out.println("Список подзадач пуст.");
             return Collections.emptyList();
-        }
-        for (Task subtask : subtasks.values()) {
-            historyManager.add(subtask);
         }
         return new ArrayList<>(subtasks.values());
     }
@@ -236,7 +213,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubtaskById(Integer id) {
         if (!subtasks.containsKey(id)) {
-            System.out.println("Удаление невозможно. Подзадачи с данным id нет в списке.");
             return;
         }
         Subtask subtask = subtasks.get(id);
@@ -250,7 +226,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllSubtasks() {
         if (subtasks.isEmpty()) {
-            System.out.println("Удаление невозможно. Список подзадач пуст.");
             return;
         }
         for (Integer taskId : subtasks.keySet()) {
