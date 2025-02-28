@@ -54,4 +54,82 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return String.format("\n%d,%s,%s,%s,%s,%d", subtask.getId(), TaskType.SUBTASK, subtask.getTitle(),
                 subtask.getStatus(), subtask.getDescription(), subtask.getEpicId());
     }
+
+    @Override
+    public int addNewTask(Task newTask) {
+        int newId = super.addNewTask(newTask);
+        save();
+        return newId;
+    }
+
+    @Override
+    public Task updateTask(Task updatedTask) {
+        Task task = super.updateTask(updatedTask);
+        save();
+        return task;
+    }
+
+    @Override
+    public void deleteTaskById(Integer id) {
+        super.deleteTaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteAllTasks() {
+        super.deleteAllTasks();
+        save();
+    }
+
+    @Override
+    public int addNewEpic(Epic newEpic) {
+        int newId = super.addNewEpic(newEpic);
+        save();
+        return newId;
+    }
+
+    @Override
+    public Epic updateEpic(Epic updatedEpic) {
+        Epic epic = super.updateEpic(updatedEpic);
+        save();
+        return epic;
+    }
+
+    @Override
+    public void deleteEpicById(Integer epicId) {
+        super.deleteEpicById(epicId);
+        save();
+    }
+
+    @Override
+    public void deleteAllEpics() {
+        super.deleteAllEpics();
+        save();
+    }
+
+    @Override
+    public Integer addNewSubtask(Subtask newSubtask, int epicId) {
+        Integer newId = super.addNewSubtask(newSubtask, epicId);
+        save();
+        return newId;
+    }
+
+    @Override
+    public Subtask updateSubtask(Subtask updatedSubtask) {
+        Subtask subtask = super.updateSubtask(updatedSubtask);
+        save();
+        return subtask;
+    }
+
+    @Override
+    public void deleteSubtaskById(Integer id) {
+        super.deleteSubtaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteAllSubtasks() {
+        super.deleteAllSubtasks();
+        save();
+    }
 }
