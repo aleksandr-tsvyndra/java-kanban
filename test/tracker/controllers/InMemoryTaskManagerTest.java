@@ -44,12 +44,11 @@ class InMemoryTaskManagerTest {
     @Test
     @DisplayName("Обновление задачи по Id")
     void shouldUpdateTaskWithSpecifiedId() {
-        Task task = new Task("Задача 1", "Описание 1", 1, TaskStatus.NEW);
-        final int taskId = taskManager.addNewTask(task);
-        Task updatedTask = new Task("Задача 1_updated", "Описание 1_updated", taskId, TaskStatus.DONE);
+        taskManager.addNewTask(new Task("Задача 1", "Описание 1", 1, TaskStatus.NEW));
+        Task updatedTask = new Task("Задача 1_updated", "Описание 1_updated", 1, TaskStatus.DONE);
 
         final Task expectedUpdatedTask = new Task("Задача 1_updated", "Описание 1_updated",
-                taskId, TaskStatus.DONE);
+                1, TaskStatus.DONE);
 
         final Task actualUpdatedTask = taskManager.updateTask(updatedTask);
 

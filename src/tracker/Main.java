@@ -1,13 +1,14 @@
 package tracker;
 
-import tracker.controllers.TaskManager;
+import tracker.controllers.FileBackedTaskManager;
 
 import tracker.model.Epic;
 import tracker.model.Subtask;
 import tracker.model.Task;
 
 import tracker.util.TaskStatus;
-import tracker.util.Managers;
+
+import java.io.File;
 
 public class Main {
 
@@ -15,7 +16,7 @@ public class Main {
 
         System.out.println("Поехали!");
 
-        TaskManager taskManager = Managers.getDefault();
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(new File("autosave.csv"));
 
         Task taskOne = new Task("Переезд", "Задача 1", 0, TaskStatus.NEW);
         Task taskTwo = new Task("Помыть посуду", "Задача 2", 0, TaskStatus.NEW);

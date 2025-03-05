@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, Task> tasks;
-    private final Map<Integer, Epic> epicTasks;
-    private final Map<Integer, Subtask> subtasks;
+    protected final Map<Integer, Task> tasks;
+    protected final Map<Integer, Epic> epicTasks;
+    protected final Map<Integer, Subtask> subtasks;
 
     private final HistoryManager historyManager;
 
-    private int id = 1;
+    protected int id = 1;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         tasks = new HashMap<>();
@@ -98,7 +98,6 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epicTasks.get(epicId);
         List<Subtask> subtasks = epic.getEpicSubtasks();
         updatedEpic.setEpicSubtasks(subtasks);
-        updatedEpic.calculateEpicStatus();
         epicTasks.put(epicId, updatedEpic);
         return epicTasks.get(epicId);
     }
@@ -172,7 +171,6 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.put(newSubtask.getId(), newSubtask);
         Epic epic = epicTasks.get(epicId);
         epic.addSubtaskInEpic(newSubtask);
-        epic.calculateEpicStatus();
         return newId;
     }
 
@@ -189,7 +187,6 @@ public class InMemoryTaskManager implements TaskManager {
         int epicId = updatedSubtask.getEpicId();
         Epic epic = epicTasks.get(epicId);
         epic.updateSubtaskInEpic(updatedSubtask);
-        epic.calculateEpicStatus();
         return subtasks.get(subtaskId);
     }
 
@@ -218,7 +215,6 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask subtask = subtasks.get(id);
         Epic epic = epicTasks.get(subtask.getEpicId());
         epic.deleteSubtaskInEpic(id);
-        epic.calculateEpicStatus();
         historyManager.remove(id);
         subtasks.remove(id);
     }
@@ -234,7 +230,6 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
         for (Epic epic : epicTasks.values()) {
             epic.deleteAllEpicSubtasks();
-            epic.calculateEpicStatus();
         }
     }
 

@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import tracker.model.Task;
-import tracker.util.Managers;
 import tracker.util.TaskStatus;
 
 import java.util.List;
@@ -124,7 +123,5 @@ class InMemoryHistoryManagerTest {
         final List<Task> history = historyManager.getHistory();
 
         assertEquals(0, history.size(), "История не очистилась.");
-        // в переменных head и tail должен быть null
-
     }
 }

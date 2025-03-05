@@ -15,7 +15,7 @@ public class Epic extends Task {
         epicSubtasks = new HashMap<>();
     }
 
-    public void calculateEpicStatus() {
+    private void calculateEpicStatus() {
         int newSubtasks = 0;
         int doneSubtasks = 0;
 
@@ -38,15 +38,18 @@ public class Epic extends Task {
 
     public void addSubtaskInEpic(Subtask subtask) {
         epicSubtasks.put(subtask.getId(), subtask);
+        calculateEpicStatus();
     }
 
     public void deleteSubtaskInEpic(int subId) {
         epicSubtasks.remove(subId);
+        calculateEpicStatus();
     }
 
     public void deleteAllEpicSubtasks() {
         if (!epicSubtasks.isEmpty()) {
             epicSubtasks.clear();
+            calculateEpicStatus();
         }
     }
 
@@ -58,11 +61,13 @@ public class Epic extends Task {
         for (Subtask sub : subtasks) {
             epicSubtasks.put(sub.getId(), sub);
         }
+        calculateEpicStatus();
     }
 
     public void updateSubtaskInEpic(Subtask updatedSubtask) {
         Integer subId = updatedSubtask.getId();
         epicSubtasks.put(subId, updatedSubtask);
+        calculateEpicStatus();
     }
 
     @Override
