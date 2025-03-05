@@ -64,32 +64,34 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             FileBackedTaskManager taskManager = new FileBackedTaskManager(file, new InMemoryHistoryManager());
             List<String> lines = Files.readAllLines(file.toPath());
-            int[] tasksId = new int[lines.size() - 1];;
-            for (int i = 1; i < lines.size(); i++) {
-                String line = lines.get(i);
-                String[] contents = line.split(",");
-                TaskType type = TaskType.valueOf(contents[1]);
-                switch (type) {
-                    case TaskType.TASK:
-                        Task task = taskFromString(line);
-                        taskManager.tasks.put(task.getId(), task);
-                        tasksId[i - 1] = task.getId();
-                        break;
-                    case TaskType.EPIC:
-                        Epic epic = epicFromString(line);
-                        taskManager.epicTasks.put(epic.getId(), epic);
-                        tasksId[i - 1] = epic.getId();
-                        break;
-                    case TaskType.SUBTASK:
-                        Subtask subtask = subtaskFromString(line);
-                        taskManager.subtasks.put(subtask.getId(), subtask);
-                        Epic subEpic = taskManager.epicTasks.get(subtask.getEpicId());
-                        subEpic.addSubtaskInEpic(subtask);
-                        tasksId[i - 1] = subtask.getId();
-                        break;
+            if (!lines.isEmpty()) {
+                int[] tasksId = new int[lines.size() - 1];
+                for (int i = 1; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    String[] contents = line.split(",");
+                    TaskType type = TaskType.valueOf(contents[1]);
+                    switch (type) {
+                        case TaskType.TASK:
+                            Task task = taskFromString(line);
+                            taskManager.tasks.put(task.getId(), task);
+                            tasksId[i - 1] = task.getId();
+                            break;
+                        case TaskType.EPIC:
+                            Epic epic = epicFromString(line);
+                            taskManager.epicTasks.put(epic.getId(), epic);
+                            tasksId[i - 1] = epic.getId();
+                            break;
+                        case TaskType.SUBTASK:
+                            Subtask subtask = subtaskFromString(line);
+                            taskManager.subtasks.put(subtask.getId(), subtask);
+                            Epic subEpic = taskManager.epicTasks.get(subtask.getEpicId());
+                            subEpic.addSubtaskInEpic(subtask);
+                            tasksId[i - 1] = subtask.getId();
+                            break;
+                    }
                 }
+                taskManager.id = getMaxId(tasksId) + 1;
             }
-            taskManager.id = getMaxId(tasksId) + 1;
             return taskManager;
         } catch (IOException e) {
             String errorMessage = "Ошибка при загрузке из файла: " + e.getMessage();

@@ -1,13 +1,14 @@
 package tracker;
 
-import tracker.controllers.TaskManager;
+import tracker.controllers.FileBackedTaskManager;
 
 import tracker.model.Epic;
 import tracker.model.Subtask;
 import tracker.model.Task;
 
 import tracker.util.TaskStatus;
-import tracker.util.Managers;
+
+import java.io.File;
 
 public class Main {
 
@@ -15,12 +16,14 @@ public class Main {
 
         System.out.println("Поехали!");
 
-        TaskManager taskManager = Managers.getDefault();
+        FileBackedTaskManager taskManager = FileBackedTaskManager.loadFromFile(new File("autosave.csv"));
 
         Task taskOne = new Task("Переезд", "Задача 1", 0, TaskStatus.NEW);
         Task taskTwo = new Task("Помыть посуду", "Задача 2", 0, TaskStatus.NEW);
         taskManager.addNewTask(taskOne);
         taskManager.addNewTask(taskTwo);
+
+        System.out.println("Список задач: " + taskManager.getAllTasks());
 
         Epic epicOne = new Epic("Эпик 1", "Эпик с 2-мя подзадачами", 0);
         Subtask subOne = new Subtask("Подзадача 1", "Подзадача 1-го эпика", 0, TaskStatus.NEW);
@@ -41,18 +44,20 @@ public class Main {
         Task updatedTaskOne = new Task("Вынести мусор", "Задача 1", 1, TaskStatus.IN_PROGRESS);
         Object result = taskManager.updateTask(updatedTaskOne);
         checkForNull(result);
-        System.out.println("Обновленная задача 1: " + taskManager.getTaskById(taskOne.getId()));
+        System.out.println("Обновленная задача 1: " + taskManager.getTaskById(1));
+
+        System.out.println("История просмотренных задач (1 задача): " + taskManager.getHistory());
 
         System.out.println("Список подзадач эпика 1: " + taskManager.getAllEpicSubtasks(epicOne.getId()));
 
-        Subtask updatedSubOne = new Subtask("Обновленная подзадача 1", "Подзадача 1-го эпика", 4,
+        Subtask updatedSubOne = new Subtask("Обновленная подзадача 1", "Подзадача 1-го эпика", 8,
                 TaskStatus.DONE);
         result = taskManager.updateSubtask(updatedSubOne);
         checkForNull(result);
         System.out.println("Обновленная подзадача 1: " + taskManager.getSubtaskById(subOne.getId()));
         System.out.println("Статус Эпика 1 поменялся с NEW на IN_PROGRESS: " + epicOne.getStatus());
 
-        Subtask updatedSubTwo = new Subtask("Обновленная подзадача 2", "Подзадача 1-го эпика", 5,
+        Subtask updatedSubTwo = new Subtask("Обновленная подзадача 2", "Подзадача 1-го эпика", 7,
                 TaskStatus.DONE);
         result = taskManager.updateSubtask(updatedSubTwo);
         checkForNull(result);
@@ -61,14 +66,14 @@ public class Main {
 
         System.out.println("Получаем Эпик 1 по id: " + taskManager.getEpicById(3));
 
-        Subtask updatedSubThree = new Subtask("Обновленная подзадача 3", "Подзадача 2-го эпика", 7,
+        Subtask updatedSubThree = new Subtask("Обновленная подзадача 3", "Подзадача 2-го эпика", 3,
                 TaskStatus.DONE);
         result = taskManager.updateSubtask(updatedSubThree);
         checkForNull(result);
         System.out.println("Обновленная подзадача 3: " + taskManager.getSubtaskById(subThree.getId()));
         System.out.println("Статус Эпика 2 поменялся с NEW на DONE: " + epicTwo.getStatus());
 
-        Epic updatedEpicOne = new Epic("Обновленный эпик 1", "Эпик с 2-мя подзадачами", 3);
+        Epic updatedEpicOne = new Epic("Обновленный эпик 1", "Эпик с 2-мя подзадачами", 6);
         result = taskManager.updateEpic(updatedEpicOne);
         checkForNull(result);
         System.out.println("Обновленный эпик 1: " + taskManager.getEpicById(updatedEpicOne.getId()));
