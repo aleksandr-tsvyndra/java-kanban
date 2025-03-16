@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import tracker.util.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 class TaskTest {
     @Test
     @DisplayName("Сравнение объектов по Id")
@@ -21,8 +24,10 @@ class TaskTest {
 
         assertEquals(epicOne, epicTwo, "Объекты класса Epic равны друг другу, если равен их id.");
 
-        Subtask subtaskOne = new Subtask("Подзадача 1", "Описание 1", 3, TaskStatus.NEW);
-        Subtask subtaskTwo = new Subtask("Подзадача 2", "Описание 2", 3, TaskStatus.DONE);
+        Subtask subtaskOne = new Subtask("Подзадача 1", "Описание 1", 3, TaskStatus.NEW,
+                LocalDateTime.of(2025, 5, 18, 14, 20), Duration.ofMinutes(5));
+        Subtask subtaskTwo = new Subtask("Подзадача 2", "Описание 2", 3, TaskStatus.DONE,
+                LocalDateTime.of(2025, 6, 19, 15, 25), Duration.ofMinutes(15));
 
         assertEquals(subtaskOne, subtaskTwo, "Объекты класса Subtask равны друг другу, если равен их id.");
     }

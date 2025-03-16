@@ -2,6 +2,9 @@ package tracker.model;
 
 import tracker.util.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.Map;
 
 public class Epic extends Task {
     private final Map<Integer, Subtask> epicSubtasks;
+    private LocalDateTime endTime;
 
     public Epic(String title, String description, int id) {
         super(title, description, id, TaskStatus.NEW);
@@ -36,20 +40,76 @@ public class Epic extends Task {
         }
     }
 
+    private void calculateEpicTimeFields() {
+        if (epicSubtasks.isEmpty()) {
+            resetEpicTimeFields();
+            return;
+        }
+        calculateEpicStartTime();
+        calculateEpicDuration();
+        calculateEpicEndTime();
+    }
+
+    private void resetEpicTimeFields() {
+        setStartTime(null);
+        setDuration(null);
+        setEndTime(null);
+    }
+
+    private void calculateEpicStartTime() {
+        LocalDateTime epicStartTime = LocalDateTime.MAX;
+        for (Subtask sub : epicSubtasks.values()) {
+            if (sub.getStartTime().isBefore(epicStartTime)) {
+                epicStartTime = sub.getStartTime();
+            }
+        }
+        setStartTime(epicStartTime);
+    }
+
+    private void calculateEpicDuration() {
+        long epicDuration = 0;
+        for (Subtask sub : epicSubtasks.values()) {
+            epicDuration += sub.getDuration().toMinutes();
+        }
+        setDuration(Duration.ofMinutes(epicDuration));
+    }
+
+    private void calculateEpicEndTime() {
+        LocalDateTime epicEndTime = LocalDateTime.MIN;
+        for (Subtask sub : epicSubtasks.values()) {
+            if (sub.getEndTime().isAfter(epicEndTime)) {
+                epicEndTime = sub.getEndTime();
+            }
+        }
+        setEndTime(epicEndTime);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     public void addSubtaskInEpic(Subtask subtask) {
         epicSubtasks.put(subtask.getId(), subtask);
         calculateEpicStatus();
+        calculateEpicTimeFields();
     }
 
     public void deleteSubtaskInEpic(int subId) {
         epicSubtasks.remove(subId);
         calculateEpicStatus();
+        calculateEpicTimeFields();
     }
 
     public void deleteAllEpicSubtasks() {
         if (!epicSubtasks.isEmpty()) {
             epicSubtasks.clear();
             calculateEpicStatus();
+            calculateEpicTimeFields();
         }
     }
 
@@ -62,12 +122,14 @@ public class Epic extends Task {
             epicSubtasks.put(sub.getId(), sub);
         }
         calculateEpicStatus();
+        calculateEpicTimeFields();
     }
 
     public void updateSubtaskInEpic(Subtask updatedSubtask) {
         Integer subId = updatedSubtask.getId();
         epicSubtasks.put(subId, updatedSubtask);
         calculateEpicStatus();
+        calculateEpicTimeFields();
     }
 
     @Override

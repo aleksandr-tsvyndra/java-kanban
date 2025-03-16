@@ -2,11 +2,15 @@ package tracker.model;
 
 import tracker.util.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private int epicId;
 
-    public Subtask(String title, String description, int id, TaskStatus status) {
-        super(title, description, id, status);
+    public Subtask(String title, String description, int id, TaskStatus status,
+                   LocalDateTime startTime, Duration duration) {
+        super(title, description, id, status, startTime, duration);
     }
 
     public int getEpicId() {
