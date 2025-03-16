@@ -6,7 +6,11 @@ import tracker.model.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import java.util.TreeSet;
+import java.util.Set;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +20,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Epic> epicTasks;
     protected final Map<Integer, Subtask> subtasks;
 
+    protected Set<Task> prioritizedTasks;
+
     private final HistoryManager historyManager;
 
     protected int id = 1;
@@ -24,6 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
         tasks = new HashMap<>();
         epicTasks = new HashMap<>();
         subtasks = new HashMap<>();
+        prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         this.historyManager = historyManager;
     }
 
@@ -236,6 +243,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        if (prioritizedTasks.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return prioritizedTasks.stream().toList();
     }
 
     private int generateNewId() {

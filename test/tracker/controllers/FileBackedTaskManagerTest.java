@@ -60,15 +60,27 @@ class FileBackedTaskManagerTest {
         assertEquals(1, taskManager.getAllEpics().size(), "В списке эпиков должна быть 1 задача");
         assertEquals(1, taskManager.getAllSubtasks().size(), "В списке сабтасок должна быть 1 задача");
 
-        Task task = new Task("Task1", "Description task1", 1, TaskStatus.NEW,
+        Task expectedTask = new Task("Task1", "Description task1", 1, TaskStatus.NEW,
                 LocalDateTime.of(2025, 3, 16, 12, 14), Duration.ofMinutes(10));
-        Epic epic = new Epic("Epic2", "Description epic2", 2);
-        Subtask subtask = new Subtask("Subtask3", "Description subtask3", 3, TaskStatus.DONE,
+        Epic expectedEpic = new Epic("Epic2", "Description epic2", 2);
+        Subtask expectedSubtask = new Subtask("Subtask3", "Description subtask3", 3, TaskStatus.DONE,
                 LocalDateTime.of(2025, 3, 17, 13, 15), Duration.ofMinutes(25));
 
-        assertEquals(task, taskManager.getAllTasks().getFirst(), "Таски должны быть одинаковыми");
-        assertEquals(epic, taskManager.getAllEpics().getFirst(), "Эпики должны быть одинаковыми");
-        assertEquals(subtask, taskManager.getAllSubtasks().getFirst(), "Сабтаски должны быть одинаковыми");
+        assertEquals(expectedTask, taskManager.getAllTasks().getFirst(), "Таски отличаются по ID");
+        assertEquals(expectedEpic, taskManager.getAllEpics().getFirst(), "Эпики отличаются по ID");
+        assertEquals(expectedSubtask, taskManager.getAllSubtasks().getFirst(), "Сабтаски отличаются по ID");
+
+        assertEquals(expectedTask.getStartTime(), taskManager.getTaskById(1).getStartTime(), "Таски отличаются полем startTime");
+        assertEquals(expectedTask.getDuration(), taskManager.getTaskById(1).getDuration(), "Таски отличаются полем Duration");
+        assertEquals(expectedTask.getEndTime(), taskManager.getTaskById(1).getEndTime(), "У тасков не сходится endTime");
+
+        assertEquals(expectedSubtask.getStartTime(), taskManager.getSubtaskById(3).getStartTime(), "Сабтаски отличаются полем startTime");
+        assertEquals(expectedSubtask.getDuration(), taskManager.getSubtaskById(3).getDuration(), "Сабтаски отличаются полем Duration");
+        assertEquals(expectedSubtask.getEndTime(), taskManager.getSubtaskById(3).getEndTime(), "У сабтасков не сходится endTime");
+
+        assertEquals(expectedSubtask.getStartTime(), taskManager.getEpicById(2).getStartTime(), "У эпика неверное поле startTime");
+        assertEquals(expectedSubtask.getDuration(), taskManager.getEpicById(2).getDuration(), "У эпика неверное поле Duration");
+        assertEquals(expectedSubtask.getEndTime(), taskManager.getEpicById(2).getEndTime(), "У эпика неверное поле endTime");
     }
 
     @Test
