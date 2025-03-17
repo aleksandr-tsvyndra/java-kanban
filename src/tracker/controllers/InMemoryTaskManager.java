@@ -1,5 +1,7 @@
 package tracker.controllers;
 
+import tracker.exceptions.TaskInteractionException;
+
 import tracker.model.Epic;
 import tracker.model.Subtask;
 import tracker.model.Task;
@@ -35,20 +37,31 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int addNewTask(Task newTask) {
+    public int addNewTask(Task task) {
+        if (hasInteractions(task)) {
+            String errorMessage = "Ошибка при добавлении: задачи не могут пересекаться по времени выполнения";
+            throw new TaskInteractionException(errorMessage);
+        }
         int newId = generateNewId();
-        newTask.setId(newId);
-        tasks.put(newTask.getId(), newTask);
+        task.setId(newId);
+        tasks.put(task.getId(), task);
+        prioritizedTasks.add(task);
         return newId;
     }
 
     @Override
-    public Task updateTask(Task updatedTask) {
-        if (!tasks.containsKey(updatedTask.getId())) {
+    public Task updateTask(Task task) {
+        if (!tasks.containsKey(task.getId())) {
             return null;
         }
-        tasks.put(updatedTask.getId(), updatedTask);
-        return tasks.get(updatedTask.getId());
+        if (hasInteractions(task)) {
+            String errorMessage = "Ошибка при обновлении: задачи не могут пересекаться по времени выполнения";
+            throw new TaskInteractionException(errorMessage);
+        }
+        prioritizedTasks.remove(tasks.get(task.getId()));
+        tasks.put(task.getId(), task);
+        prioritizedTasks.add(task);
+        return tasks.get(task.getId());
     }
 
     @Override
@@ -65,6 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (!tasks.containsKey(id)) {
             return;
         }
+        prioritizedTasks.remove(tasks.get(id));
         historyManager.remove(id);
         tasks.remove(id);
     }
@@ -75,6 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         for (Integer taskId : tasks.keySet()) {
+            prioritizedTasks.remove(tasks.get(taskId));
             historyManager.remove(taskId);
         }
         tasks.clear();
@@ -128,8 +143,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Subtask> getAllEpicSubtasks(int epicId) {
-        final Epic epic = epicTasks.get(epicId);
-        final List<Subtask> subs = epic.getEpicSubtasks();
+        Epic epic = epicTasks.get(epicId);
+        List<Subtask> subs = epic.getEpicSubtasks();
         if (subs.isEmpty()) {
             return Collections.emptyList();
         }
@@ -145,6 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
         List<Subtask> deletedSubs = epic.getEpicSubtasks();
         epic.deleteAllEpicSubtasks();
         for (Subtask sub : deletedSubs) {
+            prioritizedTasks.remove(sub);
             historyManager.remove(sub.getId());
             subtasks.remove(sub.getId());
         }
@@ -158,6 +174,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         for (Integer taskId : subtasks.keySet()) {
+            prioritizedTasks.remove(subtasks.get(taskId));
             historyManager.remove(taskId);
         }
         for (Integer taskId : epicTasks.keySet()) {
@@ -168,16 +185,22 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Integer addNewSubtask(Subtask newSubtask, int epicId) {
+    public Integer addNewSubtask(Subtask subtask, int epicId) {
         if (!epicTasks.containsKey(epicId)) {
             return null;
         }
+        if (hasInteractions(subtask)) {
+            String errorMessage = "Ошибка при добавлении: задачи не могут пересекаться по времени выполнения";
+            throw new TaskInteractionException(errorMessage);
+        }
         int newId = generateNewId();
-        newSubtask.setId(newId);
-        newSubtask.setEpicId(epicId);
-        subtasks.put(newSubtask.getId(), newSubtask);
+        subtask.setId(newId);
+        subtask.setEpicId(epicId);
+        subtasks.put(subtask.getId(), subtask);
+        prioritizedTasks.add(subtask);
+
         Epic epic = epicTasks.get(epicId);
-        epic.addSubtaskInEpic(newSubtask);
+        epic.addSubtaskInEpic(subtask);
         return newId;
     }
 
@@ -186,10 +209,16 @@ public class InMemoryTaskManager implements TaskManager {
         if (!subtasks.containsKey(updatedSubtask.getId())) {
             return null;
         }
+        if (hasInteractions(updatedSubtask)) {
+            String errorMessage = "Ошибка при обновлении: задачи не могут пересекаться по времени выполнения";
+            throw new TaskInteractionException(errorMessage);
+        }
         int subtaskId = updatedSubtask.getId();
         Subtask sub = subtasks.get(subtaskId);
         updatedSubtask.setEpicId(sub.getEpicId());
+        prioritizedTasks.remove(sub);
         subtasks.put(subtaskId, updatedSubtask);
+        prioritizedTasks.add(updatedSubtask);
 
         int epicId = updatedSubtask.getEpicId();
         Epic epic = epicTasks.get(epicId);
@@ -222,6 +251,7 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask subtask = subtasks.get(id);
         Epic epic = epicTasks.get(subtask.getEpicId());
         epic.deleteSubtaskInEpic(id);
+        prioritizedTasks.remove(subtask);
         historyManager.remove(id);
         subtasks.remove(id);
     }
@@ -232,6 +262,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
         for (Integer taskId : subtasks.keySet()) {
+            prioritizedTasks.remove(subtasks.get(taskId));
             historyManager.remove(taskId);
         }
         subtasks.clear();
@@ -251,6 +282,21 @@ public class InMemoryTaskManager implements TaskManager {
             return Collections.emptyList();
         }
         return prioritizedTasks.stream().toList();
+    }
+
+    private boolean hasInteractions(Task task) {
+        for (Task t : prioritizedTasks) {
+            if (task.getStartTime().isBefore(t.getStartTime()) && task.getEndTime().isAfter(t.getStartTime())) {
+                return true;
+            } else if (task.getStartTime().isBefore(t.getEndTime()) && task.getEndTime().isAfter(t.getEndTime())) {
+                return true;
+            } else if (task.getStartTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime())) {
+                return true;
+            } else if (task.getStartTime().isEqual(t.getStartTime()) && task.getEndTime().isEqual(t.getEndTime())) {
+                return false;
+            }
+        }
+        return false;
     }
 
     private int generateNewId() {

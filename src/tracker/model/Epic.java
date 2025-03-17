@@ -139,6 +139,9 @@ public class Epic extends Task {
                 ", description='" + getDescription() + '\'' +
                 ", id=" + getId() +
                 ", status=" + getStatus() +
+                ", startTime=" + getStartTime() +
+                ", duration=" + getDuration() +
+                ", endTime=" + endTime +
                 ", epicSubtasks=" + getEpicSubtasks() +
                 '}';
     }
