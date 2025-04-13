@@ -88,10 +88,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.isEmpty()) {
             return;
         }
-        for (Integer taskId : tasks.keySet()) {
-            prioritizedTasks.remove(tasks.get(taskId));
-            historyManager.remove(taskId);
-        }
+        tasks.values().forEach(prioritizedTasks::remove);
+        tasks.keySet().forEach(historyManager::remove);
         tasks.clear();
     }
 
@@ -118,8 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
             return null;
         }
         Epic epic = epicTasks.get(epicId);
-        List<Subtask> subtasks = epic.getEpicSubtasks();
-        updatedEpic.setEpicSubtasks(subtasks);
+        updatedEpic.setEpicSubtasks(epic.getEpicSubtasks());
         epicTasks.put(epicId, updatedEpic);
         return epicTasks.get(epicId);
     }
@@ -144,11 +141,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getAllEpicSubtasks(int epicId) {
         Epic epic = epicTasks.get(epicId);
-        List<Subtask> subs = epic.getEpicSubtasks();
-        if (subs.isEmpty()) {
+        if (epic.getEpicSubtasks().isEmpty()) {
             return Collections.emptyList();
         }
-        return new ArrayList<>(subs);
+        return new ArrayList<>(epic.getEpicSubtasks());
     }
 
     @Override
@@ -173,13 +169,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicTasks.isEmpty()) {
             return;
         }
-        for (Integer taskId : subtasks.keySet()) {
-            prioritizedTasks.remove(subtasks.get(taskId));
-            historyManager.remove(taskId);
-        }
-        for (Integer taskId : epicTasks.keySet()) {
-            historyManager.remove(taskId);
-        }
+        subtasks.values().forEach(prioritizedTasks::remove);
+        subtasks.keySet().forEach(historyManager::remove);
+        epicTasks.keySet().forEach(historyManager::remove);
         subtasks.clear();
         epicTasks.clear();
     }
@@ -261,14 +253,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtasks.isEmpty()) {
             return;
         }
-        for (Integer taskId : subtasks.keySet()) {
-            prioritizedTasks.remove(subtasks.get(taskId));
-            historyManager.remove(taskId);
-        }
+        subtasks.values().forEach(prioritizedTasks::remove);
+        subtasks.keySet().forEach(historyManager::remove);
         subtasks.clear();
-        for (Epic epic : epicTasks.values()) {
-            epic.deleteAllEpicSubtasks();
-        }
+        epicTasks.values().forEach(Epic::deleteAllEpicSubtasks);
     }
 
     @Override
@@ -286,14 +274,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     private boolean hasInteractions(Task task) {
         for (Task t : prioritizedTasks) {
-            if (task.getStartTime().isBefore(t.getStartTime()) && task.getEndTime().isAfter(t.getStartTime())) {
+            if (task.getStartTime().isEqual(t.getStartTime()) || task.getEndTime().isEqual(t.getEndTime())) {
+                return true;
+            } else if (task.getStartTime().isBefore(t.getStartTime()) && task.getEndTime().isAfter(t.getStartTime())) {
                 return true;
             } else if (task.getStartTime().isBefore(t.getEndTime()) && task.getEndTime().isAfter(t.getEndTime())) {
                 return true;
             } else if (task.getStartTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime())) {
                 return true;
-            } else if (task.getStartTime().isEqual(t.getStartTime()) && task.getEndTime().isEqual(t.getEndTime())) {
-                return false;
             }
         }
         return false;

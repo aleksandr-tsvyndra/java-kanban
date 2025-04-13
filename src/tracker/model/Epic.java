@@ -125,9 +125,8 @@ public class Epic extends Task {
         calculateEpicTimeFields();
     }
 
-    public void updateSubtaskInEpic(Subtask updatedSubtask) {
-        Integer subId = updatedSubtask.getId();
-        epicSubtasks.put(subId, updatedSubtask);
+    public void updateSubtaskInEpic(Subtask s) {
+        epicSubtasks.put(s.getId(), s);
         calculateEpicStatus();
         calculateEpicTimeFields();
     }
