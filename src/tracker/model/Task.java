@@ -33,7 +33,11 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        return startTime.plusMinutes(duration.toMinutes());
+        if (startTime != null) {
+            return startTime.plusMinutes(duration.toMinutes());
+        }
+
+        return null;
     }
 
     public String getTitle() {

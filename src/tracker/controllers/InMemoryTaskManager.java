@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.Set;
 
@@ -38,46 +39,79 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewTask(Task task) {
-        if (hasInteractions(task)) {
-            String errorMessage = "Ошибка при добавлении: задачи не могут пересекаться по времени выполнения";
-            throw new TaskInteractionException(errorMessage);
+        if (task == null) {
+            throw new IllegalArgumentException("В параметр task был передан null");
         }
+
+        if (task.getStartTime() != null) {
+            if (hasInteractions(task)) {
+                String errorMessage = "Задачи не могут пересекаться по времени выполнения";
+                throw new TaskInteractionException(errorMessage);
+            }
+            prioritizedTasks.add(task);
+        }
+
         int newId = generateNewId();
         task.setId(newId);
-        tasks.put(task.getId(), task);
-        prioritizedTasks.add(task);
+        tasks.put(newId, task);
         return newId;
     }
 
     @Override
     public Task updateTask(Task task) {
+        if (task == null) {
+            throw new IllegalArgumentException("В параметр task был передан null");
+        }
+
         if (!tasks.containsKey(task.getId())) {
-            return null;
+            String errorMessage = String.format("В трекере нет задачи с id %d", task.getId());
+            throw new NoSuchElementException(errorMessage);
         }
-        if (hasInteractions(task)) {
-            String errorMessage = "Ошибка при обновлении: задачи не могут пересекаться по времени выполнения";
-            throw new TaskInteractionException(errorMessage);
+
+        if (task.getStartTime() != null) {
+            if (hasInteractions(task)) {
+                String errorMessage = "Задачи не могут пересекаться по времени выполнения";
+                throw new TaskInteractionException(errorMessage);
+            }
         }
-        prioritizedTasks.remove(tasks.get(task.getId()));
+
+        if (getPrioritizedTasks().contains(task)) {
+            prioritizedTasks.remove(tasks.get(task.getId()));
+        }
+
+        if (task.getStartTime() != null) {
+            prioritizedTasks.add(task);
+        }
+
         tasks.put(task.getId(), task);
-        prioritizedTasks.add(task);
-        return tasks.get(task.getId());
+        return task;
     }
 
     @Override
-    public Task getTaskById(Integer id) {
-        if (!tasks.containsKey(id)) {
-            return null;
+    public Task getTaskById(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У тасков не может быть id меньше 1");
         }
+
+        if (!tasks.containsKey(id)) {
+            String errorMessage = String.format("В трекере нет задачи с id %d", id);
+            throw new NoSuchElementException(errorMessage);
+        }
+
         historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
     @Override
-    public void deleteTaskById(Integer id) {
+    public void deleteTaskById(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У тасков не может быть id меньше 1");
+        }
+
         if (!tasks.containsKey(id)) {
             return;
         }
+
         prioritizedTasks.remove(tasks.get(id));
         historyManager.remove(id);
         tasks.remove(id);
@@ -103,6 +137,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int addNewEpic(Epic newEpic) {
+        if (newEpic == null) {
+            throw new IllegalArgumentException("В параметр newEpic был передан null");
+        }
+
         int newId = generateNewId();
         newEpic.setId(newId);
         epicTasks.put(newEpic.getId(), newEpic);
@@ -110,24 +148,39 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Epic updateEpic(Epic updatedEpic) {
-        int epicId = updatedEpic.getId();
-        if (!epicTasks.containsKey(epicId)) {
-            return null;
+    public Epic updateEpic(Epic epic) {
+        if (epic == null) {
+            throw new IllegalArgumentException("В параметр epic был передан null");
         }
-        Epic epic = epicTasks.get(epicId);
-        updatedEpic.setEpicSubtasks(epic.getEpicSubtasks());
-        epicTasks.put(epicId, updatedEpic);
-        return epicTasks.get(epicId);
+
+        if (!epicTasks.containsKey(epic.getId())) {
+            String errorMessage = String.format("В трекере нет эпика с id %d", epic.getId());
+            throw new NoSuchElementException(errorMessage);
+        }
+
+        Epic e = epicTasks.get(epic.getId());
+
+        if (!e.getEpicSubtasks().isEmpty()) {
+            epic.setEpicSubtasks(e.getEpicSubtasks());
+        }
+
+        epicTasks.put(epic.getId(), epic);
+        return epic;
     }
 
     @Override
-    public Epic getEpicById(Integer epicId) {
-        if (!epicTasks.containsKey(epicId)) {
-            return null;
+    public Epic getEpicById(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У эпика не может быть id меньше 1");
         }
-        historyManager.add(epicTasks.get(epicId));
-        return epicTasks.get(epicId);
+
+        if (!epicTasks.containsKey(id)) {
+            String errorMessage = String.format("В трекере нет эпика с id %d", id);
+            throw new NoSuchElementException(errorMessage);
+        }
+
+        historyManager.add(epicTasks.get(id));
+        return epicTasks.get(id);
     }
 
     @Override
@@ -135,33 +188,46 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicTasks.isEmpty()) {
             return Collections.emptyList();
         }
+
         return new ArrayList<>(epicTasks.values());
     }
 
     @Override
-    public List<Subtask> getAllEpicSubtasks(int epicId) {
-        Epic epic = epicTasks.get(epicId);
+    public List<Subtask> getAllEpicSubtasks(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У эпика не может быть id меньше 1");
+        }
+
+        if (!epicTasks.containsKey(id)) {
+            String errorMessage = String.format("В трекере нет эпика с id %d", id);
+            throw new NoSuchElementException(errorMessage);
+        }
+
+        var epic = epicTasks.get(id);
+
         if (epic.getEpicSubtasks().isEmpty()) {
             return Collections.emptyList();
         }
+
         return new ArrayList<>(epic.getEpicSubtasks());
     }
 
     @Override
-    public void deleteEpicById(Integer epicId) {
-        if (!epicTasks.containsKey(epicId)) {
+    public void deleteEpicById(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У эпика не может быть id меньше 1");
+        }
+
+        if (!epicTasks.containsKey(id)) {
             return;
         }
-        Epic epic = epicTasks.get(epicId);
-        List<Subtask> deletedSubs = epic.getEpicSubtasks();
-        epic.deleteAllEpicSubtasks();
-        for (Subtask sub : deletedSubs) {
-            prioritizedTasks.remove(sub);
-            historyManager.remove(sub.getId());
-            subtasks.remove(sub.getId());
-        }
-        historyManager.remove(epicId);
-        epicTasks.remove(epicId);
+
+        var epic = epicTasks.get(id);
+        epic.getEpicSubtasks().forEach(prioritizedTasks::remove);
+        epic.getEpicSubtasks().stream().map(Task::getId).forEach(historyManager::remove);
+        epic.getEpicSubtasks().stream().map(Task::getId).forEach(subtasks::remove);
+        historyManager.remove(id);
+        epicTasks.remove(id);
     }
 
     @Override
@@ -169,6 +235,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicTasks.isEmpty()) {
             return;
         }
+
         subtasks.values().forEach(prioritizedTasks::remove);
         subtasks.keySet().forEach(historyManager::remove);
         epicTasks.keySet().forEach(historyManager::remove);
@@ -177,54 +244,86 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Integer addNewSubtask(Subtask subtask, int epicId) {
+    public int addNewSubtask(Subtask subtask, int epicId) {
+        if (subtask == null) {
+            throw new IllegalArgumentException("В параметр subtask был передан null");
+        }
+
+        if (epicId < 1) {
+            throw new IllegalArgumentException("У эпика не может быть id меньше 1");
+        }
+
         if (!epicTasks.containsKey(epicId)) {
-            return null;
+            String errorMessage = String.format("В трекере нет эпика с id %d", epicId);
+            throw new NoSuchElementException(errorMessage);
         }
-        if (hasInteractions(subtask)) {
-            String errorMessage = "Ошибка при добавлении: задачи не могут пересекаться по времени выполнения";
-            throw new TaskInteractionException(errorMessage);
+
+        if (subtask.getStartTime() != null) {
+            if (hasInteractions(subtask)) {
+                String errorMessage = "Задачи не могут пересекаться по времени выполнения";
+                throw new TaskInteractionException(errorMessage);
+            }
+            prioritizedTasks.add(subtask);
         }
-        int newId = generateNewId();
-        subtask.setId(newId);
+
+        int id = generateNewId();
+        subtask.setId(id);
         subtask.setEpicId(epicId);
-        subtasks.put(subtask.getId(), subtask);
-        prioritizedTasks.add(subtask);
-
-        Epic epic = epicTasks.get(epicId);
+        subtasks.put(id, subtask);
+        var epic = epicTasks.get(epicId);
         epic.addSubtaskInEpic(subtask);
-        return newId;
+        return id;
     }
 
     @Override
-    public Subtask updateSubtask(Subtask updatedSubtask) {
-        if (!subtasks.containsKey(updatedSubtask.getId())) {
-            return null;
+    public Subtask updateSubtask(Subtask subtask) {
+        if (subtask == null) {
+            throw new IllegalArgumentException("В параметр subtask был передан null");
         }
-        if (hasInteractions(updatedSubtask)) {
-            String errorMessage = "Ошибка при обновлении: задачи не могут пересекаться по времени выполнения";
-            throw new TaskInteractionException(errorMessage);
-        }
-        int subtaskId = updatedSubtask.getId();
-        Subtask sub = subtasks.get(subtaskId);
-        updatedSubtask.setEpicId(sub.getEpicId());
-        prioritizedTasks.remove(sub);
-        subtasks.put(subtaskId, updatedSubtask);
-        prioritizedTasks.add(updatedSubtask);
 
-        int epicId = updatedSubtask.getEpicId();
-        Epic epic = epicTasks.get(epicId);
-        epic.updateSubtaskInEpic(updatedSubtask);
-        return subtasks.get(subtaskId);
+        if (!subtasks.containsKey(subtask.getId())) {
+            String errorMessage = String.format("В трекере нет сабтаска с id %d", subtask.getId());
+            throw new NoSuchElementException(errorMessage);
+        }
+
+        if (subtask.getStartTime() != null) {
+            if (hasInteractions(subtask)) {
+                String errorMessage = "Задачи не могут пересекаться по времени выполнения";
+                throw new TaskInteractionException(errorMessage);
+            }
+        }
+
+        int id = subtask.getId();
+        var sub = subtasks.get(id);
+        subtask.setEpicId(sub.getEpicId());
+
+        if (getPrioritizedTasks().contains(sub)) {
+            prioritizedTasks.remove(sub);
+        }
+
+        if (subtask.getStartTime() != null) {
+            prioritizedTasks.add(subtask);
+        }
+
+        var epic = epicTasks.get(subtask.getEpicId());
+        epic.updateSubtaskInEpic(subtask);
+        subtasks.put(id, subtask);
+        return subtask;
     }
 
     @Override
-    public Subtask getSubtaskById(Integer subtaskId) {
-        if (!subtasks.containsKey(subtaskId)) {
-            return null;
+    public Subtask getSubtaskById(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У сабтаска не может быть id меньше 1");
         }
-        historyManager.add(subtasks.get(subtaskId));
-        return subtasks.get(subtaskId);
+
+        if (!subtasks.containsKey(id)) {
+            String errorMessage = String.format("В трекере нет сабтаска с id %d", id);
+            throw new NoSuchElementException(errorMessage);
+        }
+
+        historyManager.add(subtasks.get(id));
+        return subtasks.get(id);
     }
 
     @Override
@@ -232,18 +331,24 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtasks.isEmpty()) {
             return Collections.emptyList();
         }
+
         return new ArrayList<>(subtasks.values());
     }
 
     @Override
-    public void deleteSubtaskById(Integer id) {
+    public void deleteSubtaskById(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("У сабтаска не может быть id меньше 1");
+        }
+
         if (!subtasks.containsKey(id)) {
             return;
         }
-        Subtask subtask = subtasks.get(id);
-        Epic epic = epicTasks.get(subtask.getEpicId());
+
+        var sub = subtasks.get(id);
+        var epic = epicTasks.get(sub.getEpicId());
         epic.deleteSubtaskInEpic(id);
-        prioritizedTasks.remove(subtask);
+        prioritizedTasks.remove(sub);
         historyManager.remove(id);
         subtasks.remove(id);
     }
@@ -253,6 +358,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtasks.isEmpty()) {
             return;
         }
+
         subtasks.values().forEach(prioritizedTasks::remove);
         subtasks.keySet().forEach(historyManager::remove);
         subtasks.clear();
@@ -273,18 +379,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean hasInteractions(Task task) {
-        for (Task t : prioritizedTasks) {
-            if (task.getStartTime().isEqual(t.getStartTime()) || task.getEndTime().isEqual(t.getEndTime())) {
-                return true;
-            } else if (task.getStartTime().isBefore(t.getStartTime()) && task.getEndTime().isAfter(t.getStartTime())) {
-                return true;
-            } else if (task.getStartTime().isBefore(t.getEndTime()) && task.getEndTime().isAfter(t.getEndTime())) {
-                return true;
-            } else if (task.getStartTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime())) {
-                return true;
-            }
-        }
-        return false;
+        return prioritizedTasks.stream().filter(t -> !task.equals(t))
+                .anyMatch(t -> task.getStartTime().isEqual(t.getStartTime())
+                        || task.getEndTime().isEqual(t.getEndTime())
+                        || task.getStartTime().isBefore(t.getStartTime()) && task.getEndTime().isAfter(t.getStartTime())
+                        || task.getStartTime().isBefore(t.getEndTime()) && task.getEndTime().isAfter(t.getEndTime())
+                        || task.getStartTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime())
+                );
     }
 
     private int generateNewId() {

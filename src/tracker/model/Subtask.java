@@ -13,6 +13,10 @@ public class Subtask extends Task {
         super(title, description, id, status, startTime, duration);
     }
 
+    public Subtask(String title, String description, int id, TaskStatus status) {
+        super(title, description, id, status);
+    }
+
     public int getEpicId() {
         return epicId;
     }
