@@ -4,17 +4,40 @@ import tracker.util.TaskStatus;
 
 import java.util.Objects;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Task {
     private String title;
     private String description;
     private int id;
     private TaskStatus status;
+    private Duration duration;
+    private LocalDateTime startTime;
+
+    public Task(String title, String description, int id, TaskStatus status,
+                LocalDateTime startTime, Duration duration) {
+        this.title = title;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
 
     public Task(String title, String description, int id, TaskStatus status) {
         this.title = title;
         this.description = description;
         this.id = id;
         this.status = status;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plusMinutes(duration.toMinutes());
+        }
+
+        return null;
     }
 
     public String getTitle() {
@@ -49,6 +72,22 @@ public class Task {
         status = newStatus;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     @Override
     public String toString() {
         return "tracker.model.Task{" +
@@ -56,6 +95,9 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", startTime=" + startTime +
+                ", duration=" + duration +
+                ", endTime=" + getEndTime() +
                 '}';
     }
 
