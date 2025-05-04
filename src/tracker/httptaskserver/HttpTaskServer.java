@@ -28,13 +28,18 @@ public class HttpTaskServer {
     private final Gson gson;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
+        httpServer = HttpServer.create(new InetSocketAddress("localhost", 8080), 0);
         this.taskManager = taskManager;
         gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
+        httpServer.createContext("/tasks", new TasksHandler(taskManager, gson));
+        httpServer.createContext("/epics", new EpicsHandler(taskManager, gson));
+        httpServer.createContext("/subtasks", new SubtasksHandler(taskManager, gson));
+        httpServer.createContext("/history", new HistoryHandler(taskManager, gson));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager, gson));
     }
 
     public void start() {
@@ -60,16 +65,9 @@ public class HttpTaskServer {
     public static void main(String[] args) throws IOException {
         HttpTaskServer server = new HttpTaskServer(Managers.getDefault());
 
-        // добавляем обработчики в сервер
-        server.createContext("/tasks", new TasksHandler(server.getManager(), server.getGson()));
-        server.createContext("/epics", new EpicsHandler(server.getManager(), server.getGson()));
-        server.createContext("/subtasks", new SubtasksHandler(server.getManager(), server.getGson()));
-        server.createContext("/history", new HistoryHandler(server.getManager(), server.getGson()));
-        server.createContext("/prioritized", new PrioritizedHandler(server.getManager(), server.getGson()));
-
         server.start(); // запускаем сервер
         System.out.println("HTTP-сервер запущен и готов к работе!");
 
-        //server.stop(); // завершение работы сервера
+        server.stop(); // завершение работы сервера
     }
 }
