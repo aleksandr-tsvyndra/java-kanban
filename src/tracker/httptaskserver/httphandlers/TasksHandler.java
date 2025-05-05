@@ -1,27 +1,17 @@
 package tracker.httptaskserver.httphandlers;
 
-import com.google.gson.Gson;
-
 import com.sun.net.httpserver.HttpExchange;
 
-import tracker.controllers.TaskManager;
-import tracker.exceptions.ErrorResponse;
+import com.sun.net.httpserver.HttpHandler;
 import tracker.exceptions.TaskInteractionException;
 import tracker.model.Task;
-
+import tracker.controllers.TaskManager;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import java.util.NoSuchElementException;
 
-public class TasksHandler extends BaseHttpHandler {
-    protected final TaskManager taskManager;
-    protected final Gson gson;
-
-    public TasksHandler(TaskManager taskManager, Gson gson) {
-        this.taskManager = taskManager;
-        this.gson = gson;
+public class TasksHandler extends BaseHttpHandler implements HttpHandler {
+    public TasksHandler(TaskManager taskManger) {
+        super(taskManger);
     }
 
     @Override
@@ -73,29 +63,6 @@ public class TasksHandler extends BaseHttpHandler {
         } finally {
             h.close();
         }
-    }
-
-    protected String getRequestBody(HttpExchange h) throws IOException {
-        InputStream requestBodyStream = h.getRequestBody();
-        byte[] requestBodyBytes = requestBodyStream.readAllBytes();
-        return new String(requestBodyBytes, StandardCharsets.UTF_8);
-    }
-
-    protected void handleBadRequest(HttpExchange h) throws IOException {
-        String erMessage = "Сервер обнаружил в запросе клиента синтаксическую ошибку.";
-        var resp = new ErrorResponse(erMessage, 400, h.getRequestURI());
-        sendResponse(h, resp.getErrorCode(), gson.toJson(resp));
-    }
-
-    protected void handleMethodNotAllowed(HttpExchange h, String requestMethod) throws IOException {
-        String erMessage = String.format("HTTP-метод %s не поддерживается.", requestMethod);
-        var resp = new ErrorResponse(erMessage, 405, h.getRequestURI());
-        sendResponse(h, resp.getErrorCode(), gson.toJson(resp));
-    }
-
-    protected void handleException(HttpExchange h, int rCode, String erMessage) throws IOException {
-        var resp = new ErrorResponse(erMessage, rCode, h.getRequestURI());
-        sendResponse(h, resp.getErrorCode(), gson.toJson(resp));
     }
 
     private void handleGetId(HttpExchange h, int id) throws IOException {

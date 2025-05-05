@@ -1,7 +1,7 @@
 package tracker.httptaskserver.httphandlers;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import tracker.controllers.TaskManager;
 import tracker.exceptions.TaskInteractionException;
 import tracker.model.Subtask;
@@ -9,9 +9,9 @@ import tracker.model.Subtask;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-public class SubtasksHandler extends TasksHandler {
-    public SubtasksHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
+    public SubtasksHandler(TaskManager taskManger) {
+        super(taskManger);
     }
 
     @Override

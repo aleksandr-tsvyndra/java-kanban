@@ -1,18 +1,12 @@
 package tracker.httptaskserver;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-
 import tracker.controllers.TaskManager;
-import tracker.httptaskserver.typeadapters.DurationAdapter;
-import tracker.httptaskserver.typeadapters.LocalDateTimeAdapter;
+import tracker.httptaskserver.httphandlers.BaseHttpHandler;
 import tracker.util.Managers;
 
 import tracker.httptaskserver.httphandlers.EpicsHandler;
@@ -24,21 +18,17 @@ import tracker.httptaskserver.httphandlers.TasksHandler;
 public class HttpTaskServer {
     private final HttpServer httpServer;
     private final TaskManager taskManager;
-    private final Gson gson;
+    private final BaseHttpHandler baseHttpHandler;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
         this.taskManager = taskManager;
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .create();
-        httpServer.createContext("/tasks", new TasksHandler(taskManager, gson));
-        httpServer.createContext("/epics", new EpicsHandler(taskManager, gson));
-        httpServer.createContext("/subtasks", new SubtasksHandler(taskManager, gson));
-        httpServer.createContext("/history", new HistoryHandler(taskManager, gson));
-        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager, gson));
+        baseHttpHandler = new BaseHttpHandler(taskManager);
+        httpServer.createContext("/tasks", new TasksHandler(taskManager));
+        httpServer.createContext("/epics", new EpicsHandler(taskManager));
+        httpServer.createContext("/subtasks", new SubtasksHandler(taskManager));
+        httpServer.createContext("/history", new HistoryHandler(taskManager));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
     }
 
     public void start() {
@@ -54,7 +44,7 @@ public class HttpTaskServer {
     }
 
     public Gson getGson() {
-        return gson;
+        return baseHttpHandler.getGson();
     }
 
     public static void main(String[] args) throws IOException {

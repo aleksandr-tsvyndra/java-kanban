@@ -1,20 +1,14 @@
 package tracker.httptaskserver.httphandlers;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-
+import com.sun.net.httpserver.HttpHandler;
 import tracker.controllers.TaskManager;
 import tracker.exceptions.ErrorResponse;
-
 import java.io.IOException;
 
-public class PrioritizedHandler extends BaseHttpHandler {
-    private final TaskManager taskManager;
-    private final Gson gson;
-
-    public PrioritizedHandler(TaskManager taskManager, Gson gson) {
-        this.taskManager = taskManager;
-        this.gson = gson;
+public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
+    public PrioritizedHandler(TaskManager taskManger) {
+        super(taskManger);
     }
 
     @Override

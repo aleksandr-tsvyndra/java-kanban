@@ -1,8 +1,7 @@
 package tracker.httptaskserver.httphandlers;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-
+import com.sun.net.httpserver.HttpHandler;
 import tracker.controllers.TaskManager;
 import tracker.exceptions.TaskInteractionException;
 import tracker.model.Epic;
@@ -10,9 +9,9 @@ import tracker.model.Epic;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
-public class EpicsHandler extends TasksHandler {
-    public EpicsHandler(TaskManager taskManager, Gson gson) {
-        super(taskManager, gson);
+public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
+    public EpicsHandler(TaskManager taskManger) {
+        super(taskManger);
     }
 
     @Override
