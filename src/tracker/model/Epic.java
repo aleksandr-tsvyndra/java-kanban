@@ -112,12 +112,12 @@ public class Epic extends Task {
     }
 
     public void addSubtaskInEpic(Subtask subtask) {
-        epicSubtasks.put(subtask.getId(), subtask);
-        calculateEpicStatus();
-
         if (subtask.getStartTime() != null) {
             calculateEpicTimeFields();
         }
+        subtask.setEpicId(getId());
+        epicSubtasks.put(subtask.getId(), subtask);
+        calculateEpicStatus();
     }
 
     public void deleteSubtaskInEpic(int subId) {

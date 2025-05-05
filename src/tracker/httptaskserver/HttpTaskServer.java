@@ -3,7 +3,6 @@ package tracker.httptaskserver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
@@ -28,7 +27,7 @@ public class HttpTaskServer {
     private final Gson gson;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress("localhost", 8080), 0);
+        httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
         this.taskManager = taskManager;
         gson = new GsonBuilder()
                 .setPrettyPrinting()
@@ -48,10 +47,6 @@ public class HttpTaskServer {
 
     public void stop() {
         httpServer.stop(1);
-    }
-
-    public void createContext(String path, HttpHandler handler) {
-        httpServer.createContext(path, handler);
     }
 
     public TaskManager getManager() {
