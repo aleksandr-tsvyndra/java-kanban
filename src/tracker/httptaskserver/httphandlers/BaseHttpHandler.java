@@ -57,10 +57,6 @@ public class BaseHttpHandler {
         sendResponse(h, resp.getErrorCode(), gson.toJson(resp));
     }
 
-    protected TaskManager getTaskManager() {
-        return taskManager;
-    }
-
     public Gson getGson() {
         return gson;
     }
